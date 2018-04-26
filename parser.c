@@ -150,6 +150,7 @@ static void add_image(char *line) {
         s->compression = g->compression;
         s->style = g->style;
         s->convert_to_tilemap = g->convert_to_tilemap;
+        s->output_TCP = g->output_TCP;
         s->create_tilemap_ptrs = g->create_tilemap_ptrs;
 
         // add the .png extension if needed
@@ -275,6 +276,15 @@ add_fixed_colors:
 
                 g->oindex = (uint8_t)strtol(argv[1], NULL, 10);
                 g->use_oindex = true;
+            } else
+                
+            // export the teamcolors pixels
+            if (!strcmp(*argv, "#OutputTCP")) {
+                if (!strcmp(argv[1], "false")) {
+                    g->output_TCP = false;
+                } else {
+                    g->output_TCP = true;
+                }
             } else
 
             // color that should not be exported to the output image

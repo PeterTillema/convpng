@@ -41,6 +41,7 @@ typedef struct {
     unsigned int compression;        // compression information
     unsigned int style;              // output style
     bool convert_to_tilemap;         // should we convert to a tilemap?
+    bool output_TCP;                 // output TCP bytes
     bool create_tilemap_ptrs;        // should we create an array of pointers to the tiles?
     unsigned int numtiles;           // number of tiles in the image
     unsigned int width;              // save image width
@@ -86,6 +87,7 @@ typedef struct {
     bool use_ocolor;                 // use the color ommission
     bool use_oindex;                 // use the index ommission
     bool output_size;                // output size bytes for images
+    bool output_TCP;                 // output TCP bytes
 
     // for creating global palettes
     bool is_global_palette;          // should we just build a palette rather than a group?

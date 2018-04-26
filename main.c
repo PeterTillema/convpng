@@ -69,6 +69,7 @@ int main(int argc, char **argv) {
         bool       g_out_pal_img       = curr->output_palette_image;
         bool       g_out_pal_arr       = curr->output_palette_array;
         bool       g_out_size          = curr->output_size;
+        bool       g_output_TCP        = curr->output_TCP;
         char      *g_pal_name          = curr->palette;
         char      *g_name              = curr->name;
         char      *g_outc_name         = curr->outc;
@@ -430,7 +431,7 @@ int main(int argc, char **argv) {
                 format->print_image_source_header(i_output, strip_path(g_outh_name));
 
                 // allocate a buffer for storing the new data
-                i_data_buffer = safe_malloc(i_width * i_height * 2 + 2);
+                i_data_buffer = safe_malloc(i_width * i_height * 2 + 2 + 2000);
 
                 if (i_convert_to_tilemap) {
                     unsigned int tile_num = 0;
@@ -585,6 +586,12 @@ int main(int argc, char **argv) {
                     // check if rlet style
                     if (i_style_rlet) {
                         i_size = group_rlet_output(i_data, &i_data_buffer[SIZE_BYTES], i_width, i_height, i_tindex);
+                        i_size_total = i_size + SIZE_BYTES;
+                    }
+                    
+                    // Eventually add teamcolor pixels
+                    if (g_output_TCP) {
+                        i_size = add_color_offsets(&i_data_buffer[SIZE_BYTES], i_size);
                         i_size_total = i_size + SIZE_BYTES;
                     }
 

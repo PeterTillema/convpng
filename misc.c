@@ -223,6 +223,50 @@ void force_color_index(liq_color *color, liq_palette *pal, unsigned int *pal_len
     pal->entries[index] = tmpc;
 }
 
+unsigned int add_color_offsets(uint8_t *array, unsigned int len) {
+    unsigned int i;
+    unsigned int new_length = len;
+    unsigned int tcp_offset = 0;
+    unsigned int tcp_header_offset = 0;
+    unsigned int tcp_amount_of_pixels = 0;
+    bool need_insert_tcp_header = true;
+    bool first_tcp_set_offset = true;
+    
+    for (i = 0; i < len; i++) {
+        uint8_t byte = array[i];
+        
+        // Insert a new group
+        if (need_insert_tcp_header) {
+            tcp_header_offset = new_length;
+            new_length += 4;
+            need_insert_tcp_header = false;
+        }
+        if (byte == 247 || byte == 249 || byte == 251 || byte == 253) {
+            // Set the offset
+            if (first_tcp_set_offset) {
+                array[tcp_header_offset] = tcp_offset >> 8;
+                array[tcp_header_offset + 1] = tcp_offset & 0xFF;
+            }
+            first_tcp_set_offset = false;
+            
+            // Add a new group
+            if (tcp_offset > 255) {
+                array[tcp_header_offset + 2] = -30 - ((tcp_amount_of_pixels - 1) % 8 * 5);
+                array[tcp_header_offset + 3] = (tcp_amount_of_pixels - 1) / 8 + 1;
+                tcp_amount_of_pixels = 0;
+                need_insert_tcp_header = true;
+                first_tcp_set_offset = true;
+                tcp_offset = 0;
+            } else {
+                array[new_length++] = tcp_offset;
+                tcp_amount_of_pixels++;
+                tcp_offset++;
+            }
+        }
+    }
+    return new_length;
+}
+
 unsigned int remove_elements(uint8_t *array, unsigned int len, uint8_t val) {
     unsigned int i;
     unsigned int l = 0;
