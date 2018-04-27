@@ -589,7 +589,7 @@ int main(int argc, char **argv) {
                         i_size_total = i_size + SIZE_BYTES;
                     }
                     
-                    // Eventually add teamcolor pixels
+                    // Add the tcp to the data
                     if (g_output_TCP) {
                         i_size = add_color_offsets(&i_data_buffer[SIZE_BYTES], i_size);
                         i_size_total = i_size + SIZE_BYTES;
