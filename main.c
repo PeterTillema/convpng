@@ -583,8 +583,18 @@ int main(int argc, char **argv) {
                     
                     // Add the tcp to the data
                     if (g_output_TCP) {
+                        unsigned int i, temp_size = i_size + 2;
+                        
                         i_size = add_color_offsets(&i_data_buffer[SIZE_BYTES], i_size);
                         i_size_total = i_size + SIZE_BYTES;
+                        
+                        for (i = i_size_total; i; i--) {
+                            i_data_buffer[i+1] = i_data_buffer[i-1];
+                        }
+                        i_data_buffer[0] = temp_size & 0xFF;
+                        i_data_buffer[1] = temp_size >> 8;
+                        i_size += 2;
+                        i_size_total += 2;
                     }
 
                     if (!i_out_size) {

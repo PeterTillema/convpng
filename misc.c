@@ -234,7 +234,7 @@ void force_color_index(liq_color *color, liq_palette *pal, unsigned int *pal_len
 
 unsigned int add_color_offsets(uint8_t *array, unsigned int len) {
     unsigned int i;
-    unsigned int index = 0;
+    unsigned int index = 2;
     unsigned int new_length = len + 4;
     unsigned int tcp_header_offset = len;
     unsigned int tcp_amount_of_pixels = 0;
