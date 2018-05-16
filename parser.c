@@ -551,6 +551,17 @@ add_other_colors_omit:
                 g->mode = MODE_ICE;
                 convpng.numgroups++;
             } else
+                
+            // Group images as ASM format
+            if (!strcmp(*argv, "#GroupDATA")) {
+                g = &convpng.group[convpng.numgroups];
+                g->name = str_dup(argv[1]);
+                g->outh = str_dupcatdir(argv[1], ".inc");
+                g->outc = str_dupcatdir(argv[1], ".asm");
+                g->mode = MODE_ASM;
+                g->merge_data = true;
+                convpng.numgroups++;
+            }
 
             if (!strcmp(*argv, "#PNGImages")) {
             } else

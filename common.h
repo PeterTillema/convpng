@@ -72,6 +72,9 @@ typedef struct {
     bool use_oindex;                 // use the index ommission
     bool output_size;                // output size bytes for images
     bool output_TCP;                 // output TCP bytes
+    bool merge_data;                 // merge image data, *then* compress/remove bytes
+    uint8_t *merged_data;            // merged data allocated
+    unsigned int merged_data_size;   // size of the merged data
 
     // for creating global palettes
     bool is_global_palette;          // should we just build a palette rather than a group?

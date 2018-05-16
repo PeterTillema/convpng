@@ -70,6 +70,7 @@ int main(int argc, char **argv) {
         bool       g_out_pal_arr       = curr->output_palette_array;
         bool       g_out_size          = curr->output_size;
         bool       g_output_TCP        = curr->output_TCP;
+        bool       g_merge_data        = curr->merge_data;
         char      *g_pal_name          = curr->palette;
         char      *g_name              = curr->name;
         char      *g_outc_name         = curr->outc;
@@ -80,6 +81,7 @@ int main(int argc, char **argv) {
         liq_color  g_transparentcolor  = curr->tcolor;
         liq_color  g_omit_color        = curr->ocolor;
         fixed_t   *g_fixed             = curr->fixed;
+        uint8_t   *g_merged_data       = curr->merged_data;
 
         // init new elements
         bool       g_is_16_bpp         = g_bpp == 16;
@@ -582,7 +584,7 @@ int main(int argc, char **argv) {
                     }
                     
                     // Add the tcp to the data
-                    if (g_output_TCP) {
+                    if (g_output_TCP && !g_merge_data) {
                         unsigned int i, temp_size = i_size + 2;
                         
                         i_size = add_color_offsets(&i_data_buffer[SIZE_BYTES], i_size);
@@ -604,7 +606,7 @@ int main(int argc, char **argv) {
                     }
 
                     // output the image
-                    if (i_compression) {
+                    if (i_compression && !g_merge_data) {
                         i_decompressed_size = i_size_total;
                         uint8_t *c_data = compress_image(i_data_buffer, &i_size_total, i_compression);
                         set_image(i_curr, c_data, i_size_total);
@@ -619,10 +621,12 @@ int main(int argc, char **argv) {
                         if (!i_appvar) {
                             uint8_t *i_data = i_out_size ? &i_data_buffer[SIZE_BYTES] : i_data_buffer;
                             format->print_image(i_output, i_bpp, i_name, i_size_total, i_width, i_height);
-                            if (i_style_rlet || g_use_omit_color || g_use_omit_index) {
-                                output_array_compressed(format, i_output, i_data, i_size);
-                            } else {
-                                output_array(format, i_output, i_data, i_width, i_height);
+                            if (!g_merge_data) {
+                                if (i_style_rlet || g_use_omit_color || g_use_omit_index) {
+                                    output_array_compressed(format, i_output, i_data, i_size);
+                                } else {
+                                    output_array(format, i_output, i_data, i_width, i_height);
+                                }
                             }
                         }
                     }
@@ -674,6 +678,38 @@ int main(int argc, char **argv) {
             format->close_output(g_output, OUTPUT_HEADER);
             format->close_output(g_output, OUTPUT_SOURCE);
             free(g_output);
+        }
+        
+        // merge data
+        if (g_merge_data) {
+            unsigned int size_total = 0;
+            
+            curr->g_merged_data = safe_realloc(curr->g_merged_data, 50000);
+            
+            for (s = 0; s < g_numimages; s++) {
+                memcpy(&curr->g_merged_data[size_total], s.block.data, s.block.total_size);
+                size_total += s.block.total_size;
+            }
+            
+            if (curr->g_output_TCP) {
+                unsigned int i, temp_size = size_total + 2;
+                        
+                size_total = add_color_offsets(curr->g_merged_data, size_total);
+                
+                for (i = size_total; i; i--) {
+                    curr->g_merged_data[i+1] = curr->g_merged_data[i-1];
+                }
+                curr->g_merged_data[0] = temp_size & 0xFF;
+                curr->g_merged_data[1] = temp_size >> 8;
+                size_total += 2;
+            }
+            
+            if (curr->compression) {
+                uint8_t *temp_data = compress_image(curr->g_merged_data, &size_total, curr->compression);
+                curr->g_merged_data = temp_data;
+            }
+            
+            curr->merged_data_size = size_total;
         }
 
         // free *everything*
