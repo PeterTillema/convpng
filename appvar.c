@@ -261,7 +261,7 @@ void init_appvar(appvar_t *a) {
 
     // compute storage for image offsets
     a->curr = 0;
-    a->offsets[0] = a->start;
+    a->offsets[0] = a->start - APPVAR_START;
     a->offset = a->start;
 }
 

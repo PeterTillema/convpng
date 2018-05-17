@@ -327,6 +327,7 @@ add_other_colors_omit:
                 g->outc = str_dupcatdir(a->name, ".c");
                 a->mode = MODE_C;
                 a->g = g;
+                a->start = APPVAR_START;
                 convpng.numappvars++;
                 convpng.numgroups++;
             } else
@@ -342,6 +343,7 @@ add_other_colors_omit:
                 g->outc = str_dupcatdir(a->name, ".txt");
                 a->mode = MODE_ICE;
                 a->g = g;
+                a->start = APPVAR_START;
                 convpng.numappvars++;
                 convpng.numgroups++;
             } else
@@ -357,6 +359,7 @@ add_other_colors_omit:
                 g->outc = str_dupcatdir(a->name, ".asm");
                 a->mode = MODE_ASM;
                 a->g = g;
+                a->start = APPVAR_START;
                 convpng.numappvars++;
                 convpng.numgroups++;
             } else
@@ -463,7 +466,7 @@ add_other_colors_omit:
                 if (g->mode == MODE_APPVAR) {
                     appvar_t *a = &convpng.appvar[convpng.numappvars - 1];
                     a->string = str_dup(argv[1]);
-                    a->start = strlen(a->string);
+                    a->start = APPVAR_START + strlen(a->string);
                 } else {
                     command_group_error();
                 }
