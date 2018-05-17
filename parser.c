@@ -463,7 +463,7 @@ add_other_colors_omit:
                 if (g->mode == MODE_APPVAR) {
                     appvar_t *a = &convpng.appvar[convpng.numappvars - 1];
                     a->string = str_dup(argv[1]);
-                    a->start = 0x4A + strlen(a->string);
+                    a->start = strlen(a->string);
                 } else {
                     command_group_error();
                 }
