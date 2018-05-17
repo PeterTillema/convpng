@@ -30,7 +30,7 @@ void init_appvars(void) {
 // export all the output appvar structs
 // we have to free here because we can't convert appvars
 void export_appvars(void) {
-    unsigned int t, j;
+    unsigned int t, j, d, h, s;
     const format_t *format;
     output_t *output;
 
@@ -77,6 +77,33 @@ void export_appvars(void) {
         }
         if (a->write_table) {
             format->print_appvar_array(output, a->name, num);
+        }
+        
+        // add the appvar data
+        for (d = 0; d < a->amount_of_data_blocks; d++) {
+            char *group_name = a->data[d];
+            
+            fprintf(output->inc, "%s equ %d\n", group_name, a->offset);
+            
+            for (h = 0; h < convpng.numgroups; h++) {
+                group_t *group = &convpng.group[h];
+                
+                if (!strcmp(group_name, group->name)) {
+                    unsigned int offset = 0;
+                    add_appvar_raw(a, group->merged_data, group->merged_data_size);
+                    for (s = 0; s < group->numimages; s++) {
+                        image_t *i = group->image[s];
+                        bool i_style_tp = i->style == STYLE_RLET;
+                        
+                        lof(" %s\n", i->name);
+                        
+                        format->print_appvar_image(output, a->name, offset, i->name, s,
+                                               i->compression, i->width, i->height, a->write_table, i_style_tp);
+                        
+                        offset += i->block.total_size;
+                    }
+                }
+            }
         }
 
         // add palette information to the end of the appvar

@@ -21,6 +21,8 @@ typedef struct {
     unsigned int start;
     char *string;
     char name[9];
+    char *data[50];
+    unsigned int amount_of_data_blocks;
 
     // block and output information
     uint8_t *output;

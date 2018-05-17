@@ -81,7 +81,6 @@ int main(int argc, char **argv) {
         liq_color  g_transparentcolor  = curr->tcolor;
         liq_color  g_omit_color        = curr->ocolor;
         fixed_t   *g_fixed             = curr->fixed;
-        uint8_t   *g_merged_data       = curr->merged_data;
 
         // init new elements
         bool       g_is_16_bpp         = g_bpp == 16;
@@ -684,29 +683,30 @@ int main(int argc, char **argv) {
         if (g_merge_data) {
             unsigned int size_total = 0;
             
-            curr->g_merged_data = safe_realloc(curr->g_merged_data, 50000);
+            curr->merged_data = safe_realloc(curr->merged_data, 50000);
             
             for (s = 0; s < g_numimages; s++) {
-                memcpy(&curr->g_merged_data[size_total], s.block.data, s.block.total_size);
-                size_total += s.block.total_size;
+                image_t *i_curr = curr->image[s];
+                
+                memcpy(&curr->merged_data[size_total], i_curr->block.data, i_curr->block.total_size);
+                size_total += i_curr->block.total_size;
             }
             
-            if (curr->g_output_TCP) {
+            if (g_output_TCP) {
                 unsigned int i, temp_size = size_total + 2;
                         
-                size_total = add_color_offsets(curr->g_merged_data, size_total);
+                size_total = add_color_offsets(curr->merged_data, size_total);
                 
                 for (i = size_total; i; i--) {
-                    curr->g_merged_data[i+1] = curr->g_merged_data[i-1];
+                    curr->merged_data[i+1] = curr->merged_data[i-1];
                 }
-                curr->g_merged_data[0] = temp_size & 0xFF;
-                curr->g_merged_data[1] = temp_size >> 8;
+                curr->merged_data[0] = temp_size & 0xFF;
+                curr->merged_data[1] = temp_size >> 8;
                 size_total += 2;
             }
             
             if (curr->compression) {
-                uint8_t *temp_data = compress_image(curr->g_merged_data, &size_total, curr->compression);
-                curr->g_merged_data = temp_data;
+                curr->merged_data = compress_image(curr->merged_data, &size_total, curr->compression);
             }
             
             curr->merged_data_size = size_total;

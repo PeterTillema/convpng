@@ -492,6 +492,12 @@ add_other_colors_omit:
                     command_group_error();
                 }
             } else
+                
+            if (!strcmp(*argv, "#AddData")) {
+                appvar_t *a = &convpng.appvar[convpng.numappvars - 1];
+                
+                a->data[a->amount_of_data_blocks++] = str_dup(argv[1]);
+            } else
 
             if (!strcmp(*argv, "#Tilemap")) {
                 char **tilemap_options;
@@ -561,7 +567,7 @@ add_other_colors_omit:
                 g->mode = MODE_ASM;
                 g->merge_data = true;
                 convpng.numgroups++;
-            }
+            } else
 
             if (!strcmp(*argv, "#PNGImages")) {
             } else
