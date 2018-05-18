@@ -584,9 +584,9 @@ int main(int argc, char **argv) {
                     
                     // Add the tcp to the data
                     if (g_output_TCP && !g_merge_data) {
-                        unsigned int i, temp_size = i_size + 2;
+                        unsigned int i, temp_size = i_size_total;
                         
-                        i_size = add_color_offsets(&i_data_buffer[SIZE_BYTES], i_size);
+                        i_size = add_color_offsets(i_data_buffer, i_size);
                         i_size_total = i_size + SIZE_BYTES;
                         
                         for (i = i_size_total; i; i--) {
@@ -683,7 +683,7 @@ int main(int argc, char **argv) {
         if (g_merge_data) {
             unsigned int size_total = 0;
             
-            curr->merged_data = safe_realloc(curr->merged_data, 50000);
+            curr->merged_data = safe_malloc(50000);
             
             for (s = 0; s < g_numimages; s++) {
                 image_t *i_curr = curr->image[s];
@@ -693,7 +693,7 @@ int main(int argc, char **argv) {
             }
             
             if (g_output_TCP) {
-                unsigned int i, temp_size = size_total + 2;
+                unsigned int i, temp_size = size_total;
                         
                 size_total = add_color_offsets(curr->merged_data, size_total);
                 

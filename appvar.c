@@ -83,7 +83,7 @@ void export_appvars(void) {
         for (d = 0; d < a->amount_of_data_blocks; d++) {
             char *group_name = a->data[d];
             
-            fprintf(output->inc, "%s equ %d\n", group_name, a->offset);
+            fprintf(output->inc, "%s equ %d\n", group_name, a->offset - APPVAR_START);
             
             for (h = 0; h < convpng.numgroups; h++) {
                 group_t *group = &convpng.group[h];
