@@ -586,8 +586,8 @@ int main(int argc, char **argv) {
                     if (g_output_TCP && !g_merge_data) {
                         unsigned int i, temp_size = i_size_total;
                         
-                        i_size = add_color_offsets(i_data_buffer, i_size);
-                        i_size_total = i_size + SIZE_BYTES;
+                        i_size_total = add_color_offsets(i_data_buffer, i_size_total);
+                        i_size = i_size_total - SIZE_BYTES;
                         
                         for (i = i_size_total; i; i--) {
                             i_data_buffer[i+1] = i_data_buffer[i-1];
